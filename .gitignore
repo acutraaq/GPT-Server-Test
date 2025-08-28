@@ -1,0 +1,10 @@
+.vscode/
+__pycache__/
+*.log*
+*.egg-info
+test/
+logs/
+outputs/
+data/
+.venv/
+config.yaml
