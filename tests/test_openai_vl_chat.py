@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def image_to_base64(image_path):
-    """将图片转换为Base64字符串"""
+    """Convert image to Base64 string"""
     base64_prefix = "data:image/png;base64,"
 
     with open(image_path, "rb") as image_file:
@@ -13,12 +13,12 @@ def image_to_base64(image_path):
 
 
 image_path = Path(__file__).parent.parent / "assets/logo.png"
-# 使用本地的图片
+# Use local image
 url = image_to_base64(image_path)
-# 使用网络图片
+# Use network image
 url = "https://opencompass.oss-cn-shanghai.aliyuncs.com/image/compass-hub/botchat_banner.png"
 
-# 新版本 opnai
+# New version OpenAI
 client = OpenAI(api_key="EMPTY", base_url="http://localhost:8082/v1")
 
 stream = True
@@ -30,7 +30,7 @@ output = client.chat.completions.create(
             "content": [
                 {
                     "type": "text",
-                    "text": "请描述这个图片",
+                    "text": "Please describe this picture",
                 },
                 {
                     "type": "image_url",

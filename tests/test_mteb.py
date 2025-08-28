@@ -1,11 +1,11 @@
-"""用于对 Embedding 模型进行评估的 MTEB 任务
-指标文档: https://evalscope.readthedocs.io/zh-cn/latest/user_guides/backend/rageval_backend/mteb.html
+"""MTEB tasks for evaluating Embedding models
+Metrics documentation: https://evalscope.readthedocs.io/zh-cn/latest/user_guides/backend/rageval_backend/mteb.html
 """
 
 from evalscope import TaskConfig
 from evalscope.run import run_task
 
-# 待测试模型的列表
+# List of models to be tested
 test_model_list = [
     {
         "model_name": "bge-m3",

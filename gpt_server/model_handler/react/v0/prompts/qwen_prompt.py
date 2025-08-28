@@ -1,32 +1,32 @@
 TOOL_SUFFIX_PROMPT = (
-    "在调用上述工具时，Action Input的值必须使用 Json 格式来表示调用的参数。"
+    "When calling the above tools, the value of Action Input must use JSON format to represent the called parameters."
 )
 
-TOOL_CHOICE_SUFFIX_PROMPT = "\n\n## 注意: \n上述工具必须被调用！"
+TOOL_CHOICE_SUFFIX_PROMPT = "\n\n## Note: \nThe above tools must be called!"
 # default
 
-TOOL_SYSTEM_PROMPT_CN = """# 工具
-## 你拥有如下工具：
+TOOL_SYSTEM_PROMPT_CN = """# Tools
+## You have the following tools:
 
 {tool_text}
 
-## 如果使用工具，你可以在回复中插入零次、一次或多次以下命令以调用工具：
+## If using tools, you can insert zero, one or more times the following commands in replies to call tools:
 
-Action: 工具名称，必须是 [{tool_names}] 之一
-Action Input: 工具输入, 值必须使用 json 格式,且必须在一行输出,不能进行换行。
-Observation: 调用工具后的结果
-✿Retrun✿: 根据工具结果进行回复，需将图片用![](url)渲染出来"""
+Action: Tool name, must be one of [{tool_names}]
+Action Input: Tool input, value must use JSON format, and must be output in one line, cannot wrap lines.
+Observation: Result after calling the tool
+✿Retrun✿: Reply based on tool results, images need to be rendered with ![](url)"""
 
-TOOl_CHOICE_SYSTEM_PROMPT_CN = """# 提供的工具是用于将用户的输入或回复格式化为符合工具描述的json模式,你必须强制使用以下工具:
-## 工具
-## #你拥有如下工具：
+TOOl_CHOICE_SYSTEM_PROMPT_CN = """# The provided tools are used to format user input or replies into JSON mode that conforms to tool descriptions, you must forcibly use the following tools:
+## Tools
+## #You have the following tools:
 
 {tool_text}
 
-### 你可以在回复中插入零次、一次或多次以下命令以调用工具：
+### You can insert zero, one or more times the following commands in replies to call tools:
 
 Thought: you should always think about what to do
-Action: 工具名称，必须是 [{tool_names}] 之一
-Action Input: 工具输入, 值必须使用 json 格式,且必须在一行输出,不能进行换行。
-Observation: 调用工具后的结果
-✿Retrun✿: 根据工具结果进行回复，需将图片用![](url)渲染出来"""
+Action: Tool name, must be one of [{tool_names}]
+Action Input: Tool input, value must use JSON format, and must be output in one line, cannot wrap lines.
+Observation: Result after calling the tool
+✿Retrun✿: Reply based on tool results, images need to be rendered with ![](url)"""

@@ -45,33 +45,33 @@ class SparkTTSWorker(ModelWorkerBase):
             tokenizer_device="auto",
             detokenizer_device="auto",
             backend=backend,
-            wav2vec_attn_implementation="sdpa",  # 使用flash attn加速wav2vec
+            wav2vec_attn_implementation="sdpa",  # Use flash attention to accelerate wav2vec
             llm_gpu_memory_utilization=gpu_memory_utilization,
             seed=0,
         )
         loop = asyncio.get_running_loop()
-        # ------------- 添加声音 -------------
+        # ------------- Add voice -------------
         loop.create_task(
             self.engine.add_speaker(
-                "新闻联播女声",
+                "news_broadcast_female_voice",
                 audio=os.path.join(
-                    root_dir, "assets/audio_data/roles/新闻联播女声/女声.wav"
+                    root_dir, "assets/audio_data/roles/news_broadcast_female_voice/female_voice.wav"
                 ),
             )
         )
-        logger.warning(f"模型：{model_names[0]}")
+        logger.warning(f"Model: {model_names[0]}")
         logger.info(f"list_speakers: {self.engine.list_speakers()}")
 
-    # 这个是模型主要的方法
+    # This is the model's main method
     async def generate_voice_stream(self, params):
         if self.engine.engine_name != "spark":
-            raise ValueError("仅Spark-TTS支持`generate_voice_stream`功能.")
+            raise ValueError("Only Spark-TTS supports `generate_voice_stream` function.")
         async for chunk_data in self.stream_async(params=params):
             yield chunk_data
 
     async def stream_async(self, params):
         text = params["text"]
-        voice = params.get("voice", "新闻联播女声")
+        voice = params.get("voice", "news_broadcast_female_voice")
         response_format = params["response_format"]
         speed = params["speed"]
         pitch = params["pitch"]
@@ -103,7 +103,7 @@ class SparkTTSWorker(ModelWorkerBase):
             yield audio
         end_chunk_data = audio_writer.write_chunk(finalize=True)
         yield end_chunk_data
-        logger.debug(f"end_chunk_data 长度：{len(end_chunk_data)}")
+        logger.debug(f"end_chunk_data length: {len(end_chunk_data)}")
 
 
 if __name__ == "__main__":

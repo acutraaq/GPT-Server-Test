@@ -7,7 +7,7 @@ messages = [
         "content": [
             {
                 "type": "text",
-                "text": "请描述这个图片",
+                "text": "Please describe this picture",
             },
             {
                 "type": "image_url",

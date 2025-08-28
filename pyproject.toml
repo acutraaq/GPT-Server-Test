@@ -1,7 +1,7 @@
 [project]
 name = "gpt_server"
 version = "0.6.1"
-description = "gpt_server是一个用于生产级部署LLMs或Embedding的开源框架。"
+description = "gpt_server is an open source framework for production-level deployment of LLMs or Embedding."
 readme = "README.md"
 license = { text = "Apache 2.0" }
 authors = [{ name = "Yu Liu", email = "506610466@qq.com" }]
@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [tool.uv]
-default-groups = [] # 默认只安装dependencies中的库
+default-groups = [] # Default only installs libraries in dependencies
 override-dependencies = [
     "setuptools==75.2.0",
     "torchvision==0.22.1",
@@ -43,7 +43,7 @@ override-dependencies = [
     "soundfile==0.13.1", # infinity
     "xgrammar==0.1.23", #  sglang[all]==0.4.5 depends on xgrammar==0.1.17
     "flashinfer-python==0.2.10",
-    "outlines-core==0.2.10", # sglang 和 vllm 的冲突
+    "outlines-core==0.2.10", # conflict between sglang and vllm
 ]
 
 [project.scripts]

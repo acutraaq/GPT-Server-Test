@@ -1,8 +1,8 @@
 """
-如果使用   hf 下载 则：
+If using hf download:
 pip install -U huggingface_hub hf_transfer
 
-如果使用 modelscope 下载 则：
+If using modelscope download:
 pip install modelscope
 """
 
@@ -10,29 +10,29 @@ pip install modelscope
 def model_download(model_id, local_dir="/data", hub_name="hf", repo_type="model"):
     import os
 
-    # 配置 hf镜像
+    # Configure hf mirror
     os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 
     if hub_name == "hf":
         cmd = f"huggingface-cli download --repo-type {repo_type} --resume-download {model_id} --local-dir {local_dir}/{model_id} --local-dir-use-symlinks False --token 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"
-        # 启动下载
+        # Start download
         os.system(cmd)
-        print("下载完成！")
+        print("Download completed!")
     elif hub_name == "modelscope":
         from modelscope.hub.snapshot_download import snapshot_download
 
         snapshot_download(model_id=model_id, cache_dir=local_dir)  # revision="v1.0.2"
-        print("下载完成！")
+        print("Download completed!")
     else:
-        print("hub_name 只支持  hf 和 modelscope ! 请重新设置")
+        print("hub_name only supports hf and modelscope! Please reset")
 
 
 if __name__ == "__main__":
     import os
 
-    # 设置保存的路径
+    # Set save path
     local_dir = "/home/dev/model"
-    # 仓库类型 dataset / model
+    # Repository type dataset / model
     repo_type = "model"
 
     data_model_id_list = [
@@ -40,6 +40,6 @@ if __name__ == "__main__":
     ]
 
     for model_id in data_model_id_list:
-        # 设置仓库id
+        # Set repository id
         model_download(model_id, local_dir, hub_name="hf", repo_type=repo_type)
-    print("所有下载完毕！")
+    print("All downloads completed!")

@@ -19,28 +19,28 @@ STATIC_DIR = root_dir / "static"
 
 
 def kill_child_processes(parent_pid, including_parent=False):
-    "杀死子进程/僵尸进程"
+    "Kill child processes/zombie processes"
     try:
         parent = psutil.Process(parent_pid)
         children = parent.children(recursive=True)
         for child in children:
             try:
-                print(f"终止子进程 {child.pid}...")
-                os.kill(child.pid, signal.SIGTERM)  # 优雅终止
-                child.wait(5)  # 等待子进程最多 5 秒
+                print(f"Terminating child process {child.pid}...")
+                os.kill(child.pid, signal.SIGTERM)  # Graceful termination
+                child.wait(5)  # Wait for child process for up to 5 seconds
             except psutil.NoSuchProcess:
                 pass
             except psutil.TimeoutExpired():
-                print(f"终止子进程 {child.pid} 超时！强制终止...")
-                os.kill(child.pid, signal.SIGKILL)  # 强制终止
+                print(f"Terminating child process {child.pid} timeout! Force termination...")
+                os.kill(child.pid, signal.SIGKILL)  # Force termination
         if including_parent:
-            print(f"终止父进程 {parent_pid}...")
+            print(f"Terminating parent process {parent_pid}...")
             os.kill(parent_pid, signal.SIGTERM)
     except psutil.NoSuchProcess:
-        print(f"父进程 {parent_pid} 不存在！")
+        print(f"Parent process {parent_pid} does not exist!")
 
 
-# 记录父进程 PID
+# Record parent process PID
 parent_pid = os.getpid()
 
 
@@ -48,31 +48,31 @@ def signal_handler(signum, frame):
     print("\nCtrl-C detected! Cleaning up...")
     # kill_child_processes(parent_pid, including_parent=False)
     stop_server()
-    exit(0)  # 正常退出程序
+    exit(0)  # Normal program exit
 
 
 signal.signal(signal.SIGINT, signal_handler)
 
 
 def run_cmd(cmd: str, *args, **kwargs):
-    logger.info(f"执行命令如下：\n{cmd}\n")
+    logger.info(f"Executing command as follows:\n{cmd}\n")
     # subprocess.run(cmd, shell=True)
     process = subprocess.Popen(cmd, shell=True)
-    # 等待命令执行完成
+    # Wait for command execution to complete
     process.wait()
     return process.pid
 
 
 def start_controller(controller_host, controller_port, dispatch_method):
-    """启动fastchat控制器"""
+    """Start fastchat controller"""
     cmd = f"python -m gpt_server.serving.controller --host {controller_host} --port {controller_port} --dispatch-method {dispatch_method} "
-    cmd += "> /dev/null 2>&1"  # 完全静默（Linux/macOS）
+    cmd += "> /dev/null 2>&1"  # Completely silent (Linux/macOS)
     controller_process = Process(target=run_cmd, args=(cmd,))
     controller_process.start()
 
 
 def start_openai_server(host, port, controller_address, api_keys=None):
-    """启动openai api 服务"""
+    """Start OpenAI API service"""
     os.environ["FASTCHAT_WORKER_API_EMBEDDING_BATCH_SIZE"] = "100000"
 
     cmd = f"python -m gpt_server.serving.openai_api_server --host {host} --port {port} --controller-address {controller_address}"
@@ -94,7 +94,7 @@ def start_api_server(config: dict):
     controller_port = config["controller_args"]["port"]
     dispatch_method = config["controller_args"].get("dispatch_method", "shortest_queue")
     # -----------------------------------------------------------------------
-    # 判断端口是否被占用
+    # Check if ports are in use
     used_ports = []
     if is_port_in_use(controller_port):
         used_ports.append(controller_port)
@@ -102,13 +102,13 @@ def start_api_server(config: dict):
         used_ports.append(port)
     if len(used_ports) > 0:
         logger.warning(
-            f"端口：{used_ports} 已被占用!为了系统的正常运行,请确保是被已启动的gpt_server服务占用。"
+            f"Ports: {used_ports} are already in use! For normal system operation, please ensure they are occupied by the already started gpt_server service."
         )
     if controller_port not in used_ports and controller_enable:
-        # 启动控制器
+        # Start controller
         start_controller(controller_host, controller_port, dispatch_method)
     if port not in used_ports and server_enable:
-        # 启动openai_api服务
+        # Start OpenAI API service
         start_openai_server(host, port, controller_address, api_keys)
     # -----------------------------------------------------------------------
 
@@ -116,12 +116,12 @@ def start_api_server(config: dict):
 def get_model_types():
     model_types = []
     model_worker_path = root_dir / "model_worker"
-    # 遍历目录及其子目录
+    # Traverse directory and subdirectories
     for root, dirs, files in os.walk(model_worker_path):
         for file in files:
-            # 检查文件是否以 .py 结尾
+            # Check if file ends with .py
             if file.endswith(".py") and file != "__init__.py":
-                # 输出文件的完整路径
+                # Output complete file path
                 model_type = file[:-3]
                 model_types.append(model_type)
     return model_types
@@ -141,21 +141,21 @@ def start_model_worker(config: dict):
             "limit_worker_concurrency", 1024
         )
     except KeyError as e:
-        error_msg = f"请参照 https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config.yaml 设置正确的 model_worker_args"
+        error_msg = f"Please refer to https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config.yaml to set the correct model_worker_args"
         logger.error(error_msg)
         raise KeyError(error_msg)
-    exist_model_names = []  # 记录已经存在的model_name
+    exist_model_names = []  # Record existing model_name
     for model_config_ in config["models"]:
         for model_name, model_config in model_config_.items():
-            # 启用的模型
+            # Enabled models
             if model_config["enable"]:
                 # pprint(model_config)
                 print()
                 engine_config = model_config.get("model_config", None)
-                # TODO -------------- 向前兼容 --------------
+                # TODO -------------- Forward compatibility --------------
                 if engine_config:
-                    # 新版本
-                    # 模型地址
+                    # New version
+                    # Model path
                     model_name_or_path = engine_config["model_name_or_path"]
                     enable_prefix_caching = engine_config.get(
                         "enable_prefix_caching", "False"
@@ -175,7 +175,7 @@ def start_model_worker(config: dict):
 
                 else:
                     logger.error(
-                        f"""模型： {model_name}的 model_name_or_path,model_name_or_path 参数的配置必须修改到 model_config 下面！形如：
+                        f"""Model: {model_name}'s model_name_or_path,model_name_or_path parameter configuration must be modified under model_config! For example:
 - minicpmv:
     alias: null
     enable: false
@@ -189,42 +189,42 @@ def start_model_worker(config: dict):
     workers:
     - gpus:
       - 3
- """
+  """
                     )
                     sys.exit()
 
-                # -------------- 向前兼容 --------------
-                # 模型类型
+                # -------------- Forward compatibility --------------
+                # Model type
                 model_type = model_config["model_type"]
-                # 对model type 进行校验
+                # Validate model type
                 if model_type not in model_types:
                     logger.error(
-                        f"不支持model_type: {model_type},仅支持{model_types}模型之一！"
+                        f"Unsupported model_type: {model_type}, only supports one of {model_types} models!"
                     )
                     sys.exit()
 
                 model_names = model_name
                 if model_config["alias"]:
                     model_names = model_name + "," + model_config["alias"]
-                    if lora:  # 如果使用lora,将lora的name添加到 model_names 中
+                    if lora:  # If using lora, add lora name to model_names
                         lora_names = list(lora.keys())
                         model_names += "," + ",".join(lora_names)
                 intersection = list(
                     set(exist_model_names) & set(model_names.split(","))
-                )  # 获取交集
-                if intersection:  # 如果有交集 则返回True
+                )  # Get intersection
+                if intersection:  # If there is intersection return True
                     logger.error(
-                        f"存在重名的模型名称或别名：{intersection} ,请检查 config.yaml 文件"
+                        f"Duplicate model names or aliases exist: {intersection}, please check config.yaml file"
                     )
                     sys.exit()
                 exist_model_names.extend(model_names.split(","))
-                # 获取 worker 数目 并获取每个 worker 的资源
+                # Get worker count and resources for each worker
                 workers = model_config["workers"]
 
                 # process = []
                 for worker in workers:
                     gpus = worker["gpus"]
-                    # 将gpus int ---> str
+                    # Convert gpus int ---> str
                     gpus = [str(i) for i in gpus]
                     gpus_str = ",".join(gpus)
                     num_gpus = len(gpus)
@@ -238,7 +238,7 @@ def start_model_worker(config: dict):
                     elif model_config["device"].lower() == "cpu":
                         CUDA_VISIBLE_DEVICES = ""
                     else:
-                        raise Exception("目前仅支持 CPU/GPU设备!")
+                        raise Exception("Currently only supports CPU/GPU devices!")
                     backend = model_config["work_mode"]
                     if model_type == "embedding":
                         assert backend in embedding_backend_type
@@ -256,12 +256,12 @@ def start_model_worker(config: dict):
                         + f" --host {host}"
                         + f" --controller_address {controller_address}"
                         + f" --dtype {dtype}"
-                        + f" --enable_prefix_caching {enable_prefix_caching}"  # 是否开启 prefix cache
-                        + f" --gpu_memory_utilization {gpu_memory_utilization}"  # 占用GPU比例
-                        + f" --kv_cache_quant_policy {kv_cache_quant_policy}"  # kv cache 量化策略
-                        + f" --log_level {log_level}"  # 日志水平
-                        + f" --task_type {task_type}"  # 日志水平
-                        + f" --limit_worker_concurrency {limit_worker_concurrency}"  # 限制worker并发数
+                        + f" --enable_prefix_caching {enable_prefix_caching}"  # Whether to enable prefix cache
+                        + f" --gpu_memory_utilization {gpu_memory_utilization}"  # GPU memory utilization ratio
+                        + f" --kv_cache_quant_policy {kv_cache_quant_policy}"  # KV cache quantization policy
+                        + f" --log_level {log_level}"  # Log level
+                        + f" --task_type {task_type}"  # Task type
+                        + f" --limit_worker_concurrency {limit_worker_concurrency}"  # Limit worker concurrency
                     )
                     # 处理为 None的情况
                     if lora:
@@ -290,8 +290,8 @@ def start_server(
     controller_port: int = 21001,
     dispatch_method: str = "shortest_queue",
 ):
-    """启动服务"""
-    # 判断端口是否被占用
+    """Start service"""
+    # Check if ports are in use
     used_ports = []
     if is_port_in_use(controller_port):
         used_ports.append(controller_port)
@@ -299,13 +299,13 @@ def start_server(
         used_ports.append(port)
     if len(used_ports) > 0:
         logger.warning(
-            f"端口：{used_ports} 已被占用!为了系统的正常运行,请确保是被已启动的gpt_server服务占用。"
+            f"Ports: {used_ports} are already in use! For normal system operation, please ensure they are occupied by the already started gpt_server service."
         )
     if controller_port not in used_ports:
-        # 启动控制器
+        # Start controller
         start_controller(controller_host, controller_port, dispatch_method)
     if port not in used_ports:
-        # 启动openai_api服务
+        # Start OpenAI API service
         start_openai_server(host, port, controller_address, api_keys)
 
 
@@ -325,22 +325,22 @@ def stop_all_model_worker():
 
 
 def stop_server():
-    """停止服务"""
+    """Stop service"""
     stop_all_model_worker()
     stop_controller()
     stop_openai_server()
 
-    logger.info("停止服务成功！")
+    logger.info("Service stopped successfully!")
 
 
 def delete_log():
     logs_path = os.environ.get("LOGDIR")
     logger.debug(f"logs_path: {logs_path}")
-    # 如果目录不存在则创建
+    # Create directory if it doesn't exist
     if not os.path.exists(logs_path):
         os.makedirs(logs_path, exist_ok=True)
 
-    logs_path_datanames = os.listdir(logs_path)  # 查找本目录下所有文件
+    logs_path_datanames = os.listdir(logs_path)  # Find all files in this directory
     datanames = logs_path_datanames
     for dataname in datanames:
         if dataname.endswith(".log"):
@@ -348,7 +348,7 @@ def delete_log():
 
 
 def get_free_tcp_port():
-    """获取可用的端口"""
+    """Get available port"""
     tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp.bind(("", 0))
     _, port = tcp.getsockname()

@@ -4,15 +4,15 @@ from rich import print
 
 if __name__ == "__main__":
     args = Arguments(
-        url="http://localhost:8082/v1/chat/completions",  # 请求的URL地址
-        parallel=100,  # 并行请求的任务数量
-        model="qwen",  # 使用的模型名称
-        number=100,  # 请求数量
-        api="openai",  # 使用的API服务
-        dataset="openqa",  # 数据集名称
-        stream=True,  #  是否启用流式处理
+        url="http://localhost:8082/v1/chat/completions",  # Requested URL address
+        parallel=100,  # Number of parallel request tasks
+        model="qwen",  # Model name used
+        number=100,  # Number of requests
+        api="openai",  # API service used
+        dataset="openqa",  # Dataset name
+        stream=True,  # Whether to enable streaming
     )
     run_perf_benchmark(args)
     print(
-        "想要了解指标的含义,请访问: https://evalscope.readthedocs.io/zh-cn/latest/user_guides/stress_test/quick_start.html"
+        "To understand the meaning of metrics, please visit: https://evalscope.readthedocs.io/zh-cn/latest/user_guides/stress_test/quick_start.html"
     )

@@ -12,245 +12,245 @@
 
 </div>
 
-本项目依托fastchat的基础能力来提供**openai server**的能力.
+This project builds on FastChat's foundation to provide **OpenAI server** capabilities.
 
-1. 支持**Chat**、**Embedding**、**ReRanker**、**text-moderation（文本审核，分类）**、**ASR**、**TTS（支持声音克隆）**、 **SD(Stable Diffusion,文生图)** 模型的 **openai**规范 接口服务。
-2. 支持**HF**、**vLLM**、**LMDeploy**和**SGLang** 多种加速推理后端引擎。
-3. 多个模型共用**openai server**的同一个端口进行调用，自动进行模型调度。
+1. Supports **Chat**, **Embedding**, **ReRanker**, **text-moderation (text review, classification)**, **ASR**, **TTS (with voice cloning)**, and **SD (Stable Diffusion, text-to-image)** models with **OpenAI** specification API services.
+2. Supports multiple accelerated inference backend engines including **HF**, **vLLM**, **LMDeploy**, and **SGLang**.
+3. Multiple models can share the same port of the **OpenAI server** for calls, with automatic model scheduling.
 
-如果 GPT Server 对您有帮助，欢迎留下一个 ⭐ Star！
+If GPT Server is helpful to you, please leave a ⭐ Star!
 <br>
 
-## ✨ 功能亮点
-|     | 功能          | 说明                                                                |
+## ✨ Key Features
+|     | Feature          | Description                                                                |
 |-----|-------------|-------------------------------------------------------------------|
-| 🎨  | **OpenAI服务接口**     | 支持 `OpenAI` 服务接口规范，兼容所有支持 OpenAI的项目工程                                          |
-| 🚀  | **多后端引擎推理** | 支持 `vLLM`、`SGLang`、`LMDeploy`、`HF`多种高性能推理引擎 |
-| 🎯  | **Embedding/Reranker** | 支持所有兼容`Sentence_Transformers`的语义向量或重排模型，支持了Infinity后端，**Embedding**推理速度大于onnx/tensorrt，支持动态组批 |
-| 🎛️ | **Text-moderation（文本审核，分类）**   | 支持`OpenAI` 服务接口规范的文本审核，分类                                                |
-| 📱  | **ASR(语音转文本)**    | 支持基于`FunASR`的ASR模型                                        |
-| 🔊  | **TTS(文本转语音)**   | 支持基于`SparkTTS`的TTS模型，支持基于`vLLM`、`SGLang`后端对齐加速，`RTF<<1`,支持流式音频流输出                                          |
-| 🖌️  | **SD(Stable Diffusion,文生图)**    | 支持基于`diffusers`的 `文生图` 模型                                        |
-| 🔄  | **支持LM/VL模型**  | 支持多种大语言模型或多模态语言模型                                              |
-| 🎭  | **推理服务性能测试**   | 基于`Evalscope`实现`Throughput`、`TTFT`、`TPOT`等服务性能指标                                                  |
+| 🎨  | **OpenAI Service API**     | Supports `OpenAI` service API specifications, compatible with all projects that support OpenAI                                          |
+| 🚀  | **Multi-Backend Inference** | Supports multiple high-performance inference engines: `vLLM`, `SGLang`, `LMDeploy`, `HF` |
+| 🎯  | **Embedding/Reranker** | Supports all semantic vector or reranking models compatible with `Sentence_Transformers`, includes Infinity backend, **Embedding** inference speed faster than onnx/tensorrt, supports dynamic batching |
+| 🎛️ | **Text-moderation (Text Review, Classification)**   | Supports `OpenAI` service API specifications for text review and classification                                                |
+| 📱  | **ASR (Speech-to-Text)**    | Supports ASR models based on `FunASR`                                        |
+| 🔊  | **TTS (Text-to-Speech)**   | Supports TTS models based on `SparkTTS`, supports acceleration with `vLLM`, `SGLang` backends, `RTF<<1`, supports streaming audio output                                          |
+| 🖌️  | **SD (Stable Diffusion, Text-to-Image)**    | Supports `text-to-image` models based on `diffusers`                                        |
+| 🔄  | **LM/VL Model Support**  | Supports various large language models or multimodal language models                                              |
+| 🎭  | **Inference Service Performance Testing**   | Implements service performance metrics like `Throughput`, `TTFT`, `TPOT` based on `Evalscope`                                                  |
 
 <br>
 
-- 支持guided_decoding,强制模型按照Schema的要求进行JSON格式输出。
-- 支持了**Tools（Function Calling）**功能,并优化Tools解析方式，大大提高tools的调用成功率。兼容**LangChain**的 **bind_tools**、**with_structured_output**写法（目前支持Qwen系列、GLM系列）
-- 支持了**cohere**库接口规范的 /v1/rerank 接口,在dify中可用。
-- 全球唯一扩展了**openai**库,实现Reranker模型（rerank, /v1/rerank）。(代码样例见gpt_server/tests/test_openai_rerank.py)
-- 全球唯一支持了**openai**库的文本审核模型接口（text-moderation, /v1/moderations）。(代码样例见gpt_server/tests/test_openai_moderation.py)
-- 全球唯一支持了**openai**库的TTS模型接口（tts, /v1/audio/speech）(代码样例见gpt_server/tests/test_openai_tts_stream.py)
-- 全球唯一支持了**openai**库的ASR模型接口（asr, /v1/audio/transcriptions）,基于fanasr后端(代码样例见gpt_server/tests/test_openai_transcriptions.py)
-- 全球唯一支持了**openai**库的SD,文生图模型接口（sd, /v1/images/generations）,基于diffusers后端(代码样例见gpt_server/tests/test_image_gen.py)
+- Supports guided_decoding, forcing models to output in JSON format according to Schema requirements.
+- Supports **Tools (Function Calling)** functionality, and optimizes tool parsing methods to greatly improve tool call success rates. Compatible with **LangChain**'s **bind_tools** and **with_structured_output** syntax (currently supports Qwen and GLM series)
+- Supports **cohere** library interface specification /v1/rerank endpoint, available in dify.
+- World's first extension of **openai** library to implement Reranker models (rerank, /v1/rerank). (Code example: gpt_server/tests/test_openai_rerank.py)
+- World's first support for **openai** library's text moderation model interface (text-moderation, /v1/moderations). (Code example: gpt_server/tests/test_openai_moderation.py)
+- World's first support for **openai** library's TTS model interface (tts, /v1/audio/speech) (Code example: gpt_server/tests/test_openai_tts_stream.py)
+- World's first support for **openai** library's ASR model interface (asr, /v1/audio/transcriptions), based on funasr backend (Code example: gpt_server/tests/test_openai_transcriptions.py)
+- World's first support for **openai** library's SD, text-to-image model interface (sd, /v1/images/generations), based on diffusers backend (Code example: gpt_server/tests/test_image_gen.py)
 
-## 🖼️ 配置文档
-通过这个样例文件，可以很快的掌握项目的配置方式。
+## 🖼️ Configuration Documentation
+Through this example file, you can quickly master the project's configuration methods.
 <br>
-**配置文件的详细说明信息位于：[config_example.yaml](https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config_example.yaml "配置文件")**
+**Detailed configuration file information is located at: [config_example.yaml](https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config_example.yaml "Configuration File")**
 
-## 🎉 最新进展
+## 🎉 Latest Updates
 <details open>
 <summary><b>2025</b></summary>
- 
+
 ```plaintext
-2025-8-8   初步支持了 embedding 的 vllm 加速
-2025-6-17  支持了 jina-reranker-m0 全球首个支持多模态多语言的重排模型
-2025-6-12  支持了 文生图模型 flux (代码样例见gpt_server/tests/test_image_gen.py)
-2025-6-6   支持了 bge-vl 系列 (代码样例见gpt_server/tests/test_openai_embedding_vl.py)
-2025-6-6   支持了 ritrieve_zh_v1
-2025-4-29  支持了 Qwen3
-2025-4-24  支持了 Spark-TTS后端的 TTS
-2025-4-14  支持了 SGLang后端以及部分VL模型
-2025-4-2   支持了 OpenAI的ASR接口 /v1/audio/transcriptions
-2025-4-1   支持了 internvl2.5模型
-2025-2-9   支持了 QVQ
+2025-8-8   Initial support for vLLM acceleration for embedding
+2025-6-17  Supported jina-reranker-m0, world's first multimodal multilingual reranking model
+2025-6-12  Supported text-to-image model flux (code example: gpt_server/tests/test_image_gen.py)
+2025-6-6   Supported bge-vl series (code example: gpt_server/tests/test_openai_embedding_vl.py)
+2025-6-6   Supported ritrieve_zh_v1
+2025-4-29  Supported Qwen3
+2025-4-24  Supported TTS with Spark-TTS backend
+2025-4-14  Supported SGLang backend and partial VL models
+2025-4-2   Supported OpenAI ASR interface /v1/audio/transcriptions
+2025-4-1   Supported internvl2.5 model
+2025-2-9   Supported QVQ
 ```
 </details>
 
 <details close>
 <summary><b>2024</b></summary>
- 
+
 ```plaintext
-2024-12-22 支持了 tts, /v1/audio/speech TTS模型
-2024-12-21 支持了 text-moderation, /v1/moderations 文本审核模型 
-2024-12-14 支持了 phi-4
-2024-12-7  支持了 /v1/rerank 接口
-2024-12-1  支持了 QWQ-32B-Preview
-2024-10-15 支持了 Qwen2-VL
-2024-9-19  支持了 minicpmv 模型
-2024-8-17  支持了 vllm/hf 后端的 lora 部署
-2024-8-14  支持了 InternVL2 系列多模态模型
-2024-7-28  支持了 embedding/reranker 的动态组批加速（infinity后端, 比onnx/tensorrt更快）
-2024-7-19  支持了多模态模型 glm-4v-gb 的LMDeploy PyTorch后端
-2024-6-22  支持了 Qwen系列、ChatGLM系列 function call (tools) 能力
-2024-6-12  支持了 qwen-2
-2024-6-5   支持了 Yinka、zpoint_large_embedding_zh 嵌入模型
-2024-6-5   支持了 glm4-9b系列（hf和vllm）
-2024-4-27  支持了 LMDeploy 加速推理后端
-2024-4-20  支持了 llama-3
-2024-4-13  支持了 deepseek
-2024-4-4   支持了 embedding模型 acge_text_embedding
-2024-3-9   支持了 reranker 模型 （ bge-reranker，bce-reranker-base_v1）
-2024-3-3   支持了 internlm-1.0 ,internlm-2.0
-2024-3-2   支持了 qwen-1.5 0.5B, 1.8B, 4B, 7B, 14B, and 72B
-2024-2-4   支持了 vllm 实现
-2024-1-6   支持了 Yi-34B
+2024-12-22 Supported TTS, /v1/audio/speech TTS models
+2024-12-21 Supported text-moderation, /v1/moderations text moderation models
+2024-12-14 Supported phi-4
+2024-12-7  Supported /v1/rerank interface
+2024-12-1  Supported QWQ-32B-Preview
+2024-10-15 Supported Qwen2-VL
+2024-9-19  Supported minicpmv model
+2024-8-17  Supported lora deployment for vllm/hf backends
+2024-8-14  Supported InternVL2 series multimodal models
+2024-7-28  Supported dynamic batching acceleration for embedding/reranker (infinity backend, faster than onnx/tensorrt)
+2024-7-19  Supported LMDeploy PyTorch backend for multimodal model glm-4v-gb
+2024-6-22  Supported function call (tools) capabilities for Qwen and ChatGLM series
+2024-6-12  Supported qwen-2
+2024-6-5   Supported Yinka, zpoint_large_embedding_zh embedding models
+2024-6-5   Supported glm4-9b series (hf and vllm)
+2024-4-27  Supported LMDeploy accelerated inference backend
+2024-4-20  Supported llama-3
+2024-4-13  Supported deepseek
+2024-4-4   Supported embedding model acge_text_embedding
+2024-3-9   Supported reranker models (bge-reranker, bce-reranker-base_v1)
+2024-3-3   Supported internlm-1.0, internlm-2.0
+2024-3-2   Supported qwen-1.5 0.5B, 1.8B, 4B, 7B, 14B, and 72B
+2024-2-4   Supported vllm implementation
+2024-1-6   Supported Yi-34B
 ```
 </details>
 
 <details close>
 <summary><b>2023</b></summary>
- 
+
 ```plaintext
-2023-12-31 支持了 qwen-7b, qwen-14b
-2023-12-30 支持了 all-embedding(理论上支持所有的词嵌入模型)
-2023-12-24 支持了 chatglm3-6b 
+2023-12-31 Supported qwen-7b, qwen-14b
+2023-12-30 Supported all-embedding (theoretically supports all word embedding models)
+2023-12-24 Supported chatglm3-6b
 ```
 </details>
 
-## 🧭 路线
+## 🧭 Roadmap
 
-* [X] 支持HF后端
-* [X] 支持vLLM后端
-* [X] 支持LMDeploy后端
-* [X] 支持SGLang后端
-* [X] 支持 文本转语音 TTS 模型
-* [X] 支持 语音转文本 ASR 模型
-* [X] 支持 文本审核 模型
-* [X] 支持 function call 功能 (tools)（Qwen系列、ChatGLM系列已经支持,后面有需求再继续扩展）
-* [X] 支持多模态模型（初步支持glm-4v,其它模型后续慢慢支持）
-* [X] 支持Embedding模型动态组批(实现方式：infinity后端)
-* [X] 支持Reranker模型动态组批(实现方式：infinity后端)
-* [X] 可视化启动界面(不稳定,对开发人员来说比较鸡肋，后期将弃用！)
-* [X] 并行的function call功能（tools）
-* [X] 支持 文生图 模型
-* [ ] 支持 pip install 方式进行安装
+* [X] Support HF backend
+* [X] Support vLLM backend
+* [X] Support LMDeploy backend
+* [X] Support SGLang backend
+* [X] Support text-to-speech TTS models
+* [X] Support speech-to-text ASR models
+* [X] Support text moderation models
+* [X] Support function call functionality (tools) (Qwen and ChatGLM series already supported, will expand based on demand)
+* [X] Support multimodal models (initial support for glm-4v, other models to be added gradually)
+* [X] Support dynamic batching for Embedding models (implementation: infinity backend)
+* [X] Support dynamic batching for Reranker models (implementation: infinity backend)
+* [X] Visual startup interface (unstable, not very useful for developers, will be deprecated later!)
+* [X] Parallel function call functionality (tools)
+* [X] Support text-to-image models
+* [ ] Support pip install installation method
 
 
-## ⚙️ 快速开始
+## ⚙️ Quick Start
 
-### 1. 配置python环境
+### 1. Configure Python Environment
 
-#### 1.1 uv 方式 安装 (推荐,迄今最优秀的 库 管理工具, 性能和易用性远高于 pip、conda、poetry等,各大优秀开源项目都在使用。)
+#### 1.1 Install with uv (Recommended, currently the best library management tool, with performance and usability far superior to pip, conda, poetry, etc. Used by major open source projects.)
 
 ```bash
-# 安装 uv 
-pip install uv -U # 或查看教程 https://docs.astral.sh/uv/getting-started/installation/#standalone-installer
-# uv venv --seed # （可选）创建 uv 虚拟环境，并设置seed
+# Install uv
+pip install uv -U # Or check tutorial https://docs.astral.sh/uv/getting-started/installation/#standalone-installer
+# uv venv --seed # (Optional) Create uv virtual environment and set seed
 uv sync
-source .venv/bin/activate # 激活 uv 环境
+source .venv/bin/activate # Activate uv environment
 ```
 
-#### 1.2 conda  方式 安装(后期将弃用，可选)
+#### 1.2 Install with conda (Will be deprecated later, optional)
 
 ```bash
-# 1. 创建conda 环境
+# 1. Create conda environment
 conda create -n gpt_server python=3.10
 
-# 2. 激活conda 环境
+# 2. Activate conda environment
 conda activate gpt_server
 
-# 3. 安装仓库（一定要使用 install.sh 安装,否则无法解决依赖冲突）
+# 3. Install repository (must use install.sh to avoid dependency conflicts)
 bash install.sh
 ```
 
-### 2. 修改启动配置文件
+### 2. Modify Startup Configuration File
 
-#### 2.1 复制样例配置文件:
-**配置文件的详细说明信息位于：[config_example.yaml](https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config_example.yaml "配置文件")**
+#### 2.1 Copy Example Configuration File:
+**Detailed configuration file information is located at: [config_example.yaml](https://github.com/shell-nlp/gpt_server/blob/main/gpt_server/script/config_example.yaml "Configuration File")**
 
 ```bash
-# 进入script目录
+# Enter script directory
 cd gpt_server/script
-# 复制样例配置文件
+# Copy example configuration file
 cp config_example.yaml config.yaml
 ```
 
-### 3. 启动服务
-#### 3.1 命令启动
+### 3. Start Service
+#### 3.1 Command Line Startup
 
 ```bash
 uv run gpt_server/serving/main.py
 ```
-或者
+or
 ```bash
 sh gpt_server/script/start.sh
 ```
-或者
+or
 ```bash
 python gpt_server/serving/main.py
 ```
 
-#### 3.2 Docker启动
+#### 3.2 Docker Startup
 
-##### 3.2.0 使用Docker Hub镜像
+##### 3.2.0 Use Docker Hub Image
 ```bash
-docker pull 506610466/gpt_server:latest # 如果拉取失败可尝试下面的方式
-# 如果国内无法拉取docker镜像，可以尝试下面的国内镜像拉取的方式（不保证国内镜像源一直可用）
+docker pull 506610466/gpt_server:latest # If pull fails, try the method below
+# If unable to pull Docker images from mainland China, try the domestic mirror source below (not guaranteed to be always available)
 docker pull docker.1ms.run/506610466/gpt_server:latest
 ```
 
-##### 3.2.1 手动构建镜像（可选）
-- 构建镜像
+##### 3.2.1 Manual Image Build (Optional)
+- Build Image
 
 ```bash
-docker build --rm -f "Dockerfile" -t gpt_server:latest "." 
+docker build --rm -f "Dockerfile" -t gpt_server:latest "."
 ```
-##### 3.2.2 Docker Compose 启动 (建议在项目里使用docker-compose启动)
+##### 3.2.2 Docker Compose Startup (Recommended to use docker-compose in the project)
 
 ```bash
-docker-compose  -f "docker-compose.yml" up -d --build gpt_server
+docker-compose -f "docker-compose.yml" up -d --build gpt_server
 ```
 
 <details close>
-<summary> <b> 3.3 可视化UI方式启动服务（有Bug，已弃用，欢迎大佬优化代码）</b></summary>
+<summary> <b> 3.3 Visual UI Service Startup (Has Bugs, Deprecated, Welcome Experts to Optimize Code)</b></summary>
 
-#### 3.3 可视化UI方式启动服务（可选,有Bug，不建议使用，欢迎大佬优化代码）
+#### 3.3 Visual UI Service Startup (Optional, has bugs, not recommended, welcome experts to optimize code)
 
 ```bash
 cd gpt_server/serving
 streamlit run server_ui.py
 ```
 
-##### 3.3.1 Server UI界面:
+##### 3.3.1 Server UI Interface:
 
 ![server_ui_demo.png](assets/server_ui_demo.png)
 
 </details>
 
-### 4. 使用 openai 库 进行调用
+### 4. Use OpenAI Library for Calls
 
-**见 gpt_server/tests 目录 样例测试代码:
+**See example test code in gpt_server/tests directory:
 https://github.com/shell-nlp/gpt_server/tree/main/tests**
 
-### 5. 使用Chat UI
+### 5. Use Chat UI
 
 ```bash
 cd gpt_server/gpt_server/serving
 streamlit run chat_ui.py
 ```
 
-Chat UI界面:
+Chat UI Interface:
 
 ![chat_ui_demo.png](assets/chat_ui_demo.png)
 
 
 
-## ⚡ 支持的模型以及推理后端
+## ⚡ Supported Models and Inference Backends
 
-**推理速度：** LMDeploy TurboMind > SGLang > vllm > LMDeploy PyTorch > HF
+**Inference Speed:** LMDeploy TurboMind > SGLang > vllm > LMDeploy PyTorch > HF
 
-### 推理后端官方支持模型情况
+### Official Model Support by Inference Backend
 
-[LMDeploy](https://lmdeploy.readthedocs.io/en/latest/supported_models/supported_models.html) 
+[LMDeploy](https://lmdeploy.readthedocs.io/en/latest/supported_models/supported_models.html)
 
-[vLLM](https://docs.vllm.ai/en/latest/models/supported_models.html) 
+[vLLM](https://docs.vllm.ai/en/latest/models/supported_models.html)
 
-[SGLang](https://docs.sglang.ai/supported_models/generative_models.html) 
+[SGLang](https://docs.sglang.ai/supported_models/generative_models.html)
 
-官方支持的模型本项目可以五分钟之内进行兼容,但由于本人时间关系,暂时本项目只支持了常用的一些模型,如果想要支持其它模型,请提Issue.
+This project can achieve compatibility with officially supported models within five minutes, but due to time constraints, only commonly used models are currently supported. If you need support for other models, please submit an Issue.
 
 ### **LLM**
 
@@ -258,7 +258,7 @@ Chat UI界面:
 | :-------------------: | :--------: | :---: | :---: | :----------------: | :--------------: | :----: |
 |      chatglm4-9b      |  chatglm   |   √   |   √   |         √          |        √         |   √    |
 |      chatglm3-6b      |  chatglm   |   √   |   √   |         ×          |        √         |   √    |
-| Qwen (7B, 14B, etc.)) |    qwen    |   √   |   √   |         √          |        √         |   √    |
+| Qwen (7B, 14B, etc.) |    qwen    |   √   |   √   |         √          |        √         |   √    |
 | Qwen-1.5 (0.5B--72B)  |    qwen    |   √   |   √   |         √          |        √         |   √    |
 |        Qwen-2         |    qwen    |   √   |   √   |         √          |        √         |   √    |
 |       Qwen-2.5        |    qwen    |   √   |   √   |         √          |        √         |   √    |
@@ -271,7 +271,7 @@ Chat UI界面:
 |      Baichuan-2       |  baichuan  |   √   |   √   |         √          |        √         |   √    |
 |        QWQ-32B        |    qwen    |   √   |   √   |         √          |        √         |   √    |
 |         Phi-4         |    phi     |   √   |   √   |         ×          |        ×         |   √    |
-### **VLM** (视觉大模型榜单 https://rank.opencompass.org.cn/leaderboard-multimodal)
+### **VLM** (Vision Large Model Leaderboard https://rank.opencompass.org.cn/leaderboard-multimodal)
 
 | Models / BackEnd | model_type |  HF   | vllm  | LMDeploy TurboMind | LMDeploy PyTorch | SGLang |
 | :--------------: | :--------: | :---: | :---: | :----------------: | :--------------: | :----: |
@@ -285,13 +285,13 @@ Chat UI界面:
 |       QVQ        |    qwen    |   ×   |   √   |         ×          |        ×         |   ×    |
 <br>
 
-### Embedding/Rerank/Classify模型
+### Embedding/Rerank/Classify Models
 
-**原则上支持所有的Embedding/Rerank/Classify模型**
+**In principle, all Embedding/Rerank/Classify models are supported**
 
-**推理速度：** infinity > sentence_transformers
+**Inference Speed:** infinity > sentence_transformers
 
-以下模型经过测试可放心使用：
+The following models have been tested and can be used with confidence:
 
 | Models / BackEnd                                                                    | sentence_transformers  | infinity | vllm|
 | ----------------------------------------------------------------------------------- | --------------- | -------------- |----------- |
@@ -308,19 +308,19 @@ Chat UI界面:
 | qwen3-embedding                                                                     | √   | √        |√        |
 | ritrieve_zh_v1                                                                      | √   | √        |√        |
 | jina-embeddings-v3                                                                  | √   | √        |√        |
-| KoalaAI/Text-Moderation（文本审核/多分类，审核文本是否存在暴力、色情等）                | ×   | √         |×        |
-| protectai/deberta-v3-base-prompt-injection-v2（提示注入/2分类，审核文本为提示注入）    | ×   | √         |×        |
+| KoalaAI/Text-Moderation (Text Moderation/Multi-classification, check if text contains violence, pornography, etc.) | ×   | √         |×        |
+| protectai/deberta-v3-base-prompt-injection-v2 (Prompt Injection/2-classification, check if text is prompt injection) | ×   | √         |×        |
 | bge-vl                                                                              | √   | ×        |×        |
 | jina-reranker-m0                                                                    | √   | ×        |×        |
 | bge-reranker                                                                        | √   | √        |×        |
 | bce-reranker                                                                        | √   | √        |×        |
 
-目前 **ritrieve_zh_v1** C-MTEB榜单排行第一(MTEB: https://huggingface.co/spaces/mteb/leaderboard)
+Currently **ritrieve_zh_v1** ranks first on C-MTEB leaderboard (MTEB: https://huggingface.co/spaces/mteb/leaderboard)
 
 <br>
 
-### **ASR** (支持FunASR非实时模型 https://github.com/modelscope/FunASR/blob/main/README_zh.md)
-目前只测试了SenseVoiceSmall模型（性能最优的），其它模型的支持情况只是从官方文档中拷贝过来，不一定可以正常使用，欢迎测试/提issue。
+### **ASR** (Supports FunASR non-real-time models https://github.com/modelscope/FunASR/blob/main/README_zh.md)
+Currently only SenseVoiceSmall model has been tested (optimal performance), support for other models is copied from official documentation and may not work properly, welcome to test/submit issues.
 
 |    Models / BackEnd    | model_type |
 | :--------------------: | :--------: |
@@ -335,7 +335,7 @@ Chat UI界面:
 
 <br>
 
-### **TTS** 模型
+### **TTS** Models
 
 | Models / BackEnd | model_type |
 | :--------------: | :--------: |
@@ -344,8 +344,8 @@ Chat UI界面:
 
 <br>
 
-### **文生图** 模型
-[Flux 模型地址](https://huggingface.co/black-forest-labs/FLUX.1-dev)
+### **Text-to-Image** Models
+[Flux Model Address](https://huggingface.co/black-forest-labs/FLUX.1-dev)
 
 | Models / BackEnd | model_type |
 | :--------------: | :--------: |
@@ -354,19 +354,19 @@ Chat UI界面:
 
 <br>
 
-## 🏗️ 架构
+## 🏗️ Architecture
 
 ![gpt_server_archs.png](assets/gpt_server_archs.png)
 
-## 🤝 致谢
-- [FastChat](https://github.com/lm-sys/FastChat) 
-- [vLLM](https://github.com/vllm-project/vllm)  
+## 🤝 Acknowledgments
+- [FastChat](https://github.com/lm-sys/FastChat)
+- [vLLM](https://github.com/vllm-project/vllm)
 - [LMDeploy ](https://github.com/InternLM/lmdeploy)
 - [SGLang ](https://github.com/sgl-project/sglang)
-- [infinity](https://github.com/michaelfeil/infinity) 
-- [FlashTTS](https://github.com/HuiResearch/FlashTTS) 
+- [infinity](https://github.com/michaelfeil/infinity)
+- [FlashTTS](https://github.com/HuiResearch/FlashTTS)
 
-## 📲 与我联系(会邀请进入交流群)
+## 📲 Contact Me (Will invite to discussion group)
 
 ![wechat.png](assets/wechat.png)
 

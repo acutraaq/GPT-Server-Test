@@ -2,12 +2,12 @@ from openai import OpenAI
 import time
 from rich import print
 
-# 新版本 opnai
+# New version OpenAI
 client = OpenAI(api_key="EMPTY", base_url="http://localhost:8082/v1")
 
 t1 = time.time()
 output = client.completions.create(
-    model="qwen", prompt=["从1数到10。开始:1,2,"] * 8, max_tokens=1000
+    model="qwen", prompt=["Count from 1 to 10. Start: 1, 2,"] * 8, max_tokens=1000
 )
 
 

@@ -24,11 +24,11 @@ class ImagesGenRequest(BaseModel):
     )
     # model_type: Literal["t2v", "t2i"] = Field(
     #     default="t2i",
-    #     description="t2v: 文生视频 t2i: 文生图",
+    #     description="t2v: text-to-video t2i: text-to-image",
     # )
     response_format: Literal["url", "b64_json"] = Field(
         default="url",
-        description="生成图像时返回的格式。必须为“ur”或“b64_json”之一。URL仅在图像生成后60分钟内有效。",
+        description="The format to return when generating images. Must be one of 'url' or 'b64_json'. URL is only valid for 60 minutes after image generation.",
     )
 
 
@@ -40,8 +40,8 @@ class OpenAISpeechRequest(BaseModel):
     )
     input: str = Field(..., description="The text to generate audio for")
     voice: str = Field(
-        default="新闻联播女声",
-        description="暂时仅支持 新闻联播女声",
+        default="news_broadcast_female_voice",
+        description="Currently only supports news_broadcast_female_voice",
     )
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] = Field(
         default="mp3",
@@ -92,7 +92,7 @@ class SpeechRequest(BaseModel):
 class ModerationsRequest(BaseModel):
     input: Union[str, List[str]]
     model: str
-    threshold: float = Field(default=0.5, description="审核的阈值")
+    threshold: float = Field(default=0.5, description="Moderation threshold")
 
 
 class RerankRequest(BaseModel):
@@ -136,7 +136,7 @@ class CustomChatCompletionResponseChoice(ChatCompletionResponseChoice):
 
 
 class CustomCompletionResponseChoice(CompletionResponseChoice):
-    """completion 的响应结构"""
+    """Completion response structure"""
 
     finish_reason: Optional[Literal["stop", "length", "tool_calls", "error"]] = None
 

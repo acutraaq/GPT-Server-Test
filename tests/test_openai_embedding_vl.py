@@ -3,16 +3,16 @@ from rich import print
 import base64
 
 
-## 测试只对 文本嵌入
+## Test text embedding only
 client = OpenAI(api_key="EMPTY", base_url="http://localhost:8082/v1")
-data = client.embeddings.create(model="bge-vl", input=["你是谁", "你是谁"])
+data = client.embeddings.create(model="bge-vl", input=["Who are you", "Who are you"])
 
 print(data.data)
-## 测试只对 图片嵌入
+## Test image embedding only
 
 
 def image_to_base64(image_path):
-    """将图片转换为Base64字符串"""
+    """Convert image to Base64 string"""
     base64_prefix = "data:image/png;base64,"
 
     with open(image_path, "rb") as image_file:
@@ -21,14 +21,14 @@ def image_to_base64(image_path):
 
 
 image_path = "../assets/logo.png"
-# 使用本地的图片
+# Use local image
 url = image_to_base64(image_path)
 data = client.embeddings.create(model="bge-vl", input=[url, url])
 
 print(data.data)
-## 测试 图文一起嵌入
+## Test text and image embedding together
 data = client.embeddings.create(
-    model="bge-vl", input=[{"text": "你好", "image": url}] * 2
+    model="bge-vl", input=[{"text": "Hello", "image": url}] * 2
 )
 
 print(data.data)

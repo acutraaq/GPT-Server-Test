@@ -22,12 +22,12 @@ setup(
     name="gpt_server",
     version=get_version(),
     license="Apache 2.0",
-    description="gpt_server是一个用于生产级部署LLMs或Embedding的开源框架。",
+    description="gpt_server is an open source framework for production-level deployment of LLMs or Embedding.",
     long_description=readme(),
     long_description_content_type="text/markdown",
     author="Yu Liu",
     author_email="506610466@qq.com",
     packages=find_packages(),
-    include_package_data=True,  # 确保包含 MANIFEST.in 中的文件
-    # ... 其他 setup 参数 ...
+    include_package_data=True,  # Ensure files in MANIFEST.in are included
+    # ... other setup parameters ...
 )

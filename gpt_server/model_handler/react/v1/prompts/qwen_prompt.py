@@ -1,50 +1,50 @@
 TOOL_SUFFIX_PROMPT = (
-    "在调用上述工具时，action_input的值必须使用 Json 格式来表示调用的参数。"
+    "When calling the above tools, the value of action_input must use JSON format to represent the called parameters."
 )
 
-TOOL_CHOICE_SUFFIX_PROMPT = "\n\n## 注意: \n上述工具必须被调用!"
+TOOL_CHOICE_SUFFIX_PROMPT = "\n\n## Note: \nThe above tools must be called!"
 # default
 
-TOOL_SYSTEM_PROMPT_CN = """# 工具
-## 你拥有如下工具：
+TOOL_SYSTEM_PROMPT_CN = """# Tools
+## You have the following tools:
 
 {tool_text}
 
-## 如果使用工具，你可以回复零次、一次或多次以下json格式内容，以调用工具,调用工具后,Observation 表示调用工具后的结果,json格式如下:
+## If using tools, you can reply zero, one or more times with the following JSON format content to call tools. After calling tools, Observation represents the result of calling the tool. The JSON format is as follows:
 {{
-    "thought":"你应该时刻思考自己该做什么",
+    "thought":"You should always think about what to do",
     "reason":{{
-        "action":"工具名称，必须是 [{tool_names}] 之一",
-        "action_input":"工具输入, 值必须使用 json 格式"
+        "action":"Tool name, must be one of [{tool_names}]",
+        "action_input":"Tool input, value must use JSON format"
     }}
 }}
-或
+or
 {{
-    "thought":"你应该时刻思考自己该做什么",
+    "thought":"You should always think about what to do",
     "reason":{{
-        "final_answer":"根据工具结果进行回复，如果工具返回值存在图片url,需将图片用![](url)渲染出来"
+        "final_answer":"Reply based on tool results, if tool return value contains image URL, render it with ![](url)"
     }}
 }}
 """
 
-TOOl_CHOICE_SYSTEM_PROMPT_CN = """# 提供的工具是用于将用户的输入或回复格式化为符合工具描述的json模式,你必须强制使用以下工具:
-## 工具
-## #你拥有如下工具：
+TOOl_CHOICE_SYSTEM_PROMPT_CN = """# The provided tools are used to format user input or replies into JSON mode that conforms to tool descriptions, you must forcibly use the following tools:
+## Tools
+## #You have the following tools:
 
 {tool_text}
 
-### 你可以在回复中插入零次、一次或多次以下json格式内容，以调用工具,调用工具后,Observation 表示调用工具后的结果,json格式如下:
+### You can insert zero, one or more times the following JSON format content in replies to call tools. After calling tools, Observation represents the result of calling the tool. The JSON format is as follows:
 {{
-    "thought":"你应该时刻思考自己该做什么",
+    "thought":"You should always think about what to do",
     "reason":{{
-        "action":"工具名称，必须是 [{tool_names}] 之一",
-        "action_input":"工具输入, 值必须使用 json 格式"
+        "action":"Tool name, must be one of [{tool_names}]",
+        "action_input":"Tool input, value must use JSON format"
     }}
 }}
-或
+or
 {{
-    "thought":"你应该时刻思考自己该做什么",
+    "thought":"You should always think about what to do",
     "reason":{{
-        "final_answer":"根据工具结果进行回复，如果工具返回值存在图片url,需将图片用![](url)渲染出来"
+        "final_answer":"Reply based on tool results, if tool return value contains image URL, render it with ![](url)"
     }}
 }}"""

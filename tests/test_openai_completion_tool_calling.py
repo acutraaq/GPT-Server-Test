@@ -1,7 +1,7 @@
 from openai import OpenAI
 import json
 
-# 新版本 opnai
+# New version OpenAI
 client = OpenAI(api_key="EMPTY", base_url="http://localhost:8082/v1")
 
 
@@ -30,10 +30,10 @@ tools = [
         },
     }
 ]
-# 方式一
+# Method 1
 response = client.chat.completions.create(
     model="qwen",
-    messages=[{"role": "user", "content": "南京的天气怎么样"}],
+    messages=[{"role": "user", "content": "What's the weather like in Nanjing?"}],
     tools=tools,
     tool_choice="auto",
 )

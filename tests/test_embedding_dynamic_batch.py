@@ -8,8 +8,8 @@ async def f():
     client = AsyncOpenAI(api_key="EMPTY", base_url="http://localhost:8082/v1")
     data = await client.embeddings.create(
         model="bge-reranker-base",
-        input=["你是谁"] * batch,
-        extra_body={"query": "你多大了"},
+        input=["Who are you?"] * batch,
+        extra_body={"query": "How old are you?"},
     )
     return data.data
 
@@ -22,7 +22,7 @@ async def main():
         coro_list.append(f())
     res = await asyncio.gather(*coro_list)
     t2 = time.time()
-    print(f"耗时： {(t2-t1)*1000:.2f} ms")
+    print(f"Time taken: {(t2-t1)*1000:.2f} ms")
 
 
 # without dynamic_batch
