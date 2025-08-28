@@ -34,6 +34,768 @@ This guide provides comprehensive instructions for deploying GPT Server in an en
 - **High Performance**: Optimized for production workloads
 - **Scalability**: Support for multiple model instances and load balancing
 
+## Required Tools & Dependencies
+
+### 🔧 **System Requirements Overview**
+
+Before starting deployment, ensure you have access to all required tools and dependencies. This section provides comprehensive lists for different deployment scenarios.
+
+### 📋 **Core System Tools**
+
+#### **Package Managers & System Tools**
+```bash
+# Ubuntu/Debian
+sudo apt update && sudo apt install -y \
+    curl \
+    wget \
+    git \
+    vim \
+    nano \
+    htop \
+    iotop \
+    ncdu \
+    tree \
+    jq \
+    httpie \
+    unzip \
+    zip \
+    tar \
+    gzip \
+    bzip2 \
+    xz-utils \
+    build-essential \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    libffi-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    liblzma-dev \
+    tk-dev \
+    python3-dev \
+    python3-pip \
+    python3-venv \
+    python3-setuptools \
+    python3-wheel \
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    ufw \
+    fail2ban \
+    rsyslog \
+    logrotate \
+    cron \
+    anacron \
+    unattended-upgrades \
+    needrestart \
+    screen \
+    tmux \
+    rsync \
+    openssh-server \
+    openssh-client \
+    net-tools \
+    iputils-ping \
+    dnsutils \
+    traceroute \
+    telnet \
+    nmap \
+    tcpdump \
+    iptables \
+    nftables \
+    systemd \
+    systemctl \
+    journalctl
+
+# CentOS/RHEL
+sudo yum groupinstall -y "Development Tools"
+sudo yum install -y \
+    curl \
+    wget \
+    git \
+    vim \
+    nano \
+    htop \
+    iotop \
+    ncdu \
+    tree \
+    jq \
+    httpie \
+    unzip \
+    zip \
+    tar \
+    gzip \
+    bzip2 \
+    xz \
+    cmake \
+    pkgconfig \
+    openssl-devel \
+    libffi-devel \
+    bzip2-devel \
+    readline-devel \
+    sqlite-devel \
+    llvm \
+    ncurses-devel \
+    lzma-devel \
+    tkinter \
+    python3-devel \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel \
+    epel-release \
+    yum-utils \
+    firewalld \
+    fail2ban \
+    rsyslog \
+    logrotate \
+    cronie \
+    anacron \
+    yum-cron \
+    screen \
+    tmux \
+    rsync \
+    openssh-server \
+    openssh-client \
+    net-tools \
+    iputils \
+    bind-utils \
+    traceroute \
+    telnet \
+    nmap \
+    tcpdump \
+    iptables \
+    nftables \
+    systemd \
+    systemctl \
+    journalctl
+```
+
+#### **Python Environment Tools**
+```bash
+# Python version management (optional but recommended)
+# pyenv for managing multiple Python versions
+curl https://pyenv.run | bash
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+# Install Python 3.11
+pyenv install 3.11.8
+pyenv global 3.11.8
+
+# uv package manager (recommended)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
+# Verify installations
+python --version
+uv --version
+```
+
+### 🐳 **Container & Orchestration Tools**
+
+#### **Docker Ecosystem**
+```bash
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Install Docker Buildx for multi-platform builds
+sudo apt install docker-buildx-plugin
+
+# Verify Docker installation
+docker --version
+docker-compose --version
+docker buildx version
+```
+
+#### **Kubernetes Tools**
+```bash
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Install k9s (optional TUI for Kubernetes)
+curl -sS https://webinstall.dev/k9s | bash
+
+# Verify installations
+kubectl version --client
+helm version
+k9s --version
+```
+
+#### **Container Registry Tools**
+```bash
+# Docker Registry access
+sudo apt install docker-registry
+
+# AWS CLI for ECR (if using AWS)
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+# Google Cloud SDK for GCR (if using GCP)
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+
+# Azure CLI for ACR (if using Azure)
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+```
+
+### 🎮 **GPU & Hardware Acceleration Tools**
+
+#### **NVIDIA GPU Tools**
+```bash
+# Install NVIDIA drivers (Ubuntu)
+sudo apt update
+sudo apt install ubuntu-drivers-common
+sudo ubuntu-drivers autoinstall
+
+# Or manual installation
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/12.2.0/local_installers/cuda_12.2.0_535.54.03_linux.run
+sudo sh cuda_12.2.0_535.54.03_linux.run --no-opengl-libs --no-man-page --no-docs
+
+# Install cuDNN
+wget https://developer.download.nvidia.com/compute/cudnn/8.9.4/local_installers/cudnn_8.9.4.25-1.cuda12.2_0.deb
+sudo dpkg -i cudnn_8.9.4.25-1.cuda12.2_0.deb
+
+# Install NCCL (for multi-GPU)
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libnccl2_2.18.3-1+cuda12.2_amd64.deb
+sudo dpkg -i libnccl2_2.18.3-1+cuda12.2_amd64.deb
+
+# Verify GPU setup
+nvidia-smi
+nvcc --version
+```
+
+#### **AMD GPU Tools (Optional)**
+```bash
+# Install ROCm
+wget https://repo.radeon.com/amdgpu-install/23.40.2/ubuntu/focal/amdgpu-install_23.40.2.50402-1_all.deb
+sudo dpkg -i amdgpu-install_23.40.2.50402-1_all.deb
+sudo amdgpu-install --usecase=graphics,rocm
+
+# Verify ROCm
+rocm-smi
+hipcc --version
+```
+
+### 📊 **Monitoring & Observability Tools**
+
+#### **System Monitoring**
+```bash
+# Prometheus Node Exporter
+wget https://github.com/prometheus/node_exporter/releases/latest/download/node_exporter-1.7.0.linux-amd64.tar.gz
+tar xvf node_exporter-1.7.0.linux-amd64.tar.gz
+sudo mv node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin/
+sudo useradd -rs /bin/false node_exporter
+sudo tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable node_exporter
+sudo systemctl start node_exporter
+
+# Grafana
+wget https://dl.grafana.com/oss/release/grafana_10.2.0_amd64.deb
+sudo dpkg -i grafana_10.2.0_amd64.deb
+sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
+```
+
+#### **Log Aggregation**
+```bash
+# ELK Stack (Elasticsearch, Logstash, Kibana)
+# Install Elasticsearch
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+sudo apt update
+sudo apt install elasticsearch
+
+# Install Logstash
+sudo apt install logstash
+
+# Install Kibana
+sudo apt install kibana
+
+# Alternative: Loki + Promtail (lighter weight)
+curl -O -L "https://github.com/grafana/loki/releases/latest/download/loki-linux-amd64.zip"
+unzip loki-linux-amd64.zip
+sudo mv loki-linux-amd64 /usr/local/bin/loki
+
+curl -O -L "https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip"
+unzip promtail-linux-amd64.zip
+sudo mv promtail-linux-amd64 /usr/local/bin/promtail
+```
+
+#### **Application Monitoring**
+```bash
+# Prometheus
+wget https://github.com/prometheus/prometheus/releases/latest/download/prometheus-2.47.0.linux-amd64.tar.gz
+tar xvf prometheus-2.47.0.linux-amd64.tar.gz
+sudo mv prometheus-2.47.0.linux-amd64 /usr/local/prometheus
+
+# Alertmanager
+wget https://github.com/prometheus/alertmanager/releases/latest/download/alertmanager-0.26.0.linux-amd64.tar.gz
+tar xvf alertmanager-0.26.0.linux-amd64.tar.gz
+sudo mv alertmanager-0.26.0.linux-amd64 /usr/local/alertmanager
+```
+
+### 🔒 **Security & Access Control Tools**
+
+#### **Authentication & Authorization**
+```bash
+# LDAP server (optional)
+sudo apt install slapd ldap-utils
+sudo dpkg-reconfigure slapd
+
+# OAuth/OIDC providers
+sudo apt install keycloak
+
+# Certificate management
+sudo apt install certbot python3-certbot-nginx
+
+# SSL/TLS tools
+sudo apt install openssl ca-certificates
+
+# Security scanning
+sudo apt install lynis rkhunter chkrootkit
+
+# Intrusion detection
+sudo apt install snort suricata
+```
+
+#### **Network Security**
+```bash
+# Firewall
+sudo apt install ufw
+sudo ufw enable
+
+# VPN (optional)
+sudo apt install openvpn easy-rsa
+
+# SSH hardening
+sudo apt install openssh-server
+# Edit /etc/ssh/sshd_config
+# - Disable root login
+# - Use key-based authentication
+# - Change default port
+# - Enable fail2ban
+
+# Fail2ban
+sudo apt install fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+```
+
+### 🗄️ **Database & Storage Tools**
+
+#### **PostgreSQL**
+```bash
+# Install PostgreSQL
+sudo apt install postgresql postgresql-contrib
+
+# Install pgAdmin (optional)
+curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
+sudo sh -c 'echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list'
+sudo apt update
+sudo apt install pgadmin4
+
+# Install backup tools
+sudo apt install pgbackrest barman
+```
+
+#### **Redis**
+```bash
+# Install Redis
+sudo apt install redis-server
+
+# Install Redis CLI tools
+sudo apt install redis-tools
+
+# Install Redis Cluster tools (optional)
+wget https://download.redis.io/redis-stable.tar.gz
+tar xzf redis-stable.tar.gz
+cd redis-stable
+make
+sudo make install
+```
+
+#### **Storage Tools**
+```bash
+# NFS client/server
+sudo apt install nfs-common nfs-kernel-server
+
+# Samba (SMB/CIFS)
+sudo apt install samba samba-common-bin
+
+# Object storage (MinIO)
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
+sudo mv minio /usr/local/bin/
+
+# Cloud storage tools
+# AWS S3
+pip install awscli boto3
+
+# Google Cloud Storage
+pip install google-cloud-storage
+
+# Azure Blob Storage
+pip install azure-storage-blob azure-identity
+```
+
+### 🧪 **Testing & Quality Assurance Tools**
+
+#### **Load Testing**
+```bash
+# Install k6
+sudo apt update
+sudo apt install k6
+
+# Install Locust
+pip install locust
+
+# Install JMeter
+wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.6.2.tgz
+tar xzf apache-jmeter-5.6.2.tgz
+sudo mv apache-jmeter-5.6.2 /opt/jmeter
+
+# Install Artillery
+npm install -g artillery
+```
+
+#### **API Testing**
+```bash
+# Install Postman (GUI)
+wget https://dl.pstmn.io/download/latest/linux64 -O postman.tar.gz
+tar xzf postman.tar.gz
+sudo mv Postman /opt/postman
+
+# Install Newman (CLI for Postman)
+npm install -g newman
+
+# Install REST clients
+sudo apt install curl wget httpie
+
+# Install API documentation tools
+pip install sphinx sphinx-rtd-theme
+npm install -g redoc-cli
+```
+
+#### **Code Quality**
+```bash
+# Python tools
+pip install black isort flake8 mypy pylint bandit safety
+
+# JavaScript/Node.js tools (if needed)
+npm install -g eslint prettier typescript
+
+# Shell script tools
+sudo apt install shellcheck
+
+# YAML/JSON tools
+pip install yamllint
+sudo apt install jq
+
+# Pre-commit hooks
+pip install pre-commit
+```
+
+### 🚀 **CI/CD Tools**
+
+#### **GitHub Actions Runners**
+```bash
+# Install GitHub Actions runner
+mkdir actions-runner && cd actions-runner
+curl -o actions-runner-linux-x64-2.311.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.311.0/actions-runner-linux-x64-2.311.0.tar.gz
+tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
+./config.sh --url https://github.com/your-org/your-repo --token YOUR_TOKEN
+./run.sh
+```
+
+#### **Jenkins**
+```bash
+# Install Jenkins
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt update
+sudo apt install jenkins
+
+# Install Jenkins plugins
+# - Pipeline
+# - Git
+# - Docker
+# - Kubernetes
+# - Performance Publisher
+# - Test Results Analyzer
+```
+
+#### **GitLab CI/CD**
+```bash
+# Install GitLab Runner
+curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash
+sudo apt install gitlab-runner
+
+# Register runner
+sudo gitlab-runner register
+```
+
+### 📚 **Documentation & Collaboration Tools**
+
+#### **Documentation**
+```bash
+# Install MkDocs
+pip install mkdocs mkdocs-material
+
+# Install Sphinx
+pip install sphinx sphinx-rtd-theme
+
+# Install PlantUML for diagrams
+sudo apt install plantuml
+
+# Install draw.io desktop
+wget https://github.com/jgraph/drawio-desktop/releases/latest/download/drawio-amd64-21.6.8.deb
+sudo dpkg -i drawio-amd64-21.6.8.deb
+```
+
+#### **Communication**
+```bash
+# Install Slack client (optional)
+wget https://downloads.slack-edge.com/releases/linux/4.35.131/slack-desktop-4.35.131-amd64.deb
+sudo dpkg -i slack-desktop-4.35.131-amd64.deb
+
+# Install Discord (optional)
+wget https://discord.com/api/download?platform=linux&format=deb -O discord.deb
+sudo dpkg -i discord.deb
+```
+
+### 🔍 **Troubleshooting & Diagnostic Tools**
+
+#### **Network Diagnostics**
+```bash
+# Install network tools
+sudo apt install \
+    netcat \
+    socat \
+    tcpdump \
+    wireshark \
+    nmap \
+    traceroute \
+    mtr \
+    iperf \
+    speedtest-cli \
+    dnsutils \
+    whois \
+    dig \
+    nslookup
+```
+
+#### **System Diagnostics**
+```bash
+# Install system monitoring tools
+sudo apt install \
+    sysstat \
+    iotop \
+    htop \
+    atop \
+    nmon \
+    dstat \
+    vmstat \
+    iostat \
+    sar \
+    mpstat \
+    pidstat \
+    perf \
+    strace \
+    ltrace \
+    gdb \
+    valgrind
+```
+
+#### **Log Analysis**
+```bash
+# Install log analysis tools
+sudo apt install \
+    logwatch \
+    logcheck \
+    swatch \
+    multitail \
+    lnav \
+    goaccess
+```
+
+### 📋 **Tool Verification Script**
+
+```bash
+#!/bin/bash
+# verify_tools.sh - Verify all required tools are installed and working
+
+echo "🔍 GPT Server Tools Verification"
+echo "================================"
+
+TOOLS=(
+    "python:python --version"
+    "uv:uv --version"
+    "docker:docker --version"
+    "docker-compose:docker-compose --version"
+    "kubectl:kubectl version --client"
+    "helm:helm version"
+    "nvidia-smi:nvidia-smi --query-gpu=driver_version --format=csv,noheader,nounits"
+    "git:git --version"
+    "curl:curl --version"
+    "wget:wget --version"
+    "jq:jq --version"
+    "htop:htop --version"
+    "vim:vim --version"
+    "nano:nano --version"
+)
+
+PASSED=0
+TOTAL=${#TOOLS[@]}
+
+for tool in "${TOOLS[@]}"; do
+    NAME=$(echo $tool | cut -d: -f1)
+    COMMAND=$(echo $tool | cut -d: -f2)
+
+    echo -n "Checking $NAME... "
+    if eval "$COMMAND" &>/dev/null; then
+        echo "✅ PASSED"
+        ((PASSED++))
+    else
+        echo "❌ FAILED"
+    fi
+done
+
+echo ""
+echo "Results: $PASSED/$TOTAL tools verified successfully"
+
+if [ $PASSED -eq $TOTAL ]; then
+    echo "🎉 All tools are properly installed!"
+    exit 0
+else
+    echo "⚠️  Some tools are missing. Please install them before proceeding."
+    exit 1
+fi
+```
+
+### 📦 **Quick Installation Scripts**
+
+#### **Ubuntu/Debian Quick Install**
+```bash
+#!/bin/bash
+# ubuntu_setup.sh - Quick setup for Ubuntu systems
+
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install core tools
+sudo apt install -y curl wget git vim htop jq httpie unzip python3 python3-pip
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install NVIDIA drivers (if GPU present)
+if lspci | grep -i nvidia; then
+    sudo apt install ubuntu-drivers-common
+    sudo ubuntu-drivers autoinstall
+fi
+
+echo "✅ Ubuntu setup completed!"
+echo "Please reboot and run 'docker --version' to verify installation"
+```
+
+#### **CentOS/RHEL Quick Install**
+```bash
+#!/bin/bash
+# centos_setup.sh - Quick setup for CentOS/RHEL systems
+
+# Update system
+sudo yum update -y
+
+# Install core tools
+sudo yum install -y curl wget git vim htop jq httpie unzip python3 python3-pip
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install NVIDIA drivers (if GPU present)
+if lspci | grep -i nvidia; then
+    sudo yum install -y kernel-devel kernel-headers gcc make
+    # Install NVIDIA drivers manually
+fi
+
+echo "✅ CentOS setup completed!"
+echo "Please reboot and run 'docker --version' to verify installation"
+```
+
+### 🎯 **Tool Categories Summary**
+
+| Category | Essential Tools | Optional Tools |
+|----------|-----------------|----------------|
+| **System** | curl, wget, git, vim, python3 | htop, jq, tree, ncdu |
+| **Container** | docker, docker-compose | kubectl, helm, k9s |
+| **GPU** | nvidia-smi, nvcc | cudnn, nccl |
+| **Monitoring** | prometheus, grafana | elk stack, loki |
+| **Security** | ufw, fail2ban | ldap, keycloak, certbot |
+| **Database** | postgresql, redis | pgadmin, barman |
+| **Testing** | pytest, k6 | jmeter, artillery, locust |
+| **CI/CD** | github actions | jenkins, gitlab-ci |
+| **Documentation** | mkdocs, sphinx | plantuml, draw.io |
+
+### ⚡ **Installation Time Estimates**
+
+- **Basic Setup**: 15-30 minutes
+- **Full Development Environment**: 45-60 minutes
+- **Production Environment**: 60-90 minutes
+- **Enterprise Environment**: 2-4 hours
+
+### 🔄 **Next Steps**
+
+After installing all required tools:
+
+1. **Run Verification Script**: `./verify_tools.sh`
+2. **Run Pre-deployment Check**: `./pre_deployment_check.sh`
+3. **Proceed with Deployment**: Follow the step-by-step guide
+4. **Monitor and Maintain**: Use the monitoring tools installed
+
+This comprehensive tool list ensures you have everything needed for successful GPT Server deployment across different environments and use cases.
+
 ## Prerequisites
 
 ### Software Requirements
